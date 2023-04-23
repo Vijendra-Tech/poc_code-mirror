@@ -41,7 +41,7 @@ const Footer = () => {
         </a>
         Code at{" "}
         <a
-          href="https://github.com/manuarora700/react-code-editor"
+          href="https://github.com/Vijendra-Tech/poc_code-mirror/tree/main/poc_codemirr-ui"
           target="__blank"
           className="text-white  hover:bg-red-500 hover:text-white font-medium"
         >
