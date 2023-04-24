@@ -9,6 +9,8 @@ import CompiledOutput from "./components/CompiledOutput";
 // import "codemirror/theme/darcula.css";
 import { okaidia } from "@uiw/codemirror-theme-okaidia";
 import Footer from "./components/Footer";
+import { toastMessage } from "./components/Toast";
+import { ToastContainer } from "react-toastify";
 
 const javascriptDefault = `/**
 * Problem: check tree is balanced or not.
@@ -71,12 +73,14 @@ console.log(isBalanced(root)); // true
 function App() {
   const [codes, setCode] = useState(javascriptDefault);
   const [output, setOutPut] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
   const onChange = (value, viewUpdate) => {
     setCode(value);
   };
 
   const hanndleExecute = () => {
+    setProcessing(true);
     const formData = {
       language_id: 63,
       // encode source code in base64
@@ -99,6 +103,7 @@ function App() {
       .request(options)
       .then((res) => {
         console.log("res.data", res.data);
+        setProcessing(true);
         const token = res?.data?.token;
         checkStatusFromAPI(token);
       })
@@ -109,7 +114,12 @@ function App() {
         console.log("status", status);
         if (status === 429) {
           console.log("too many requests", status);
+          toastMessage(
+            "Quota of 50 requests exceeded for the Day!Plese try again tomorrow or choose some other plan ",
+            false
+          );
         }
+        setProcessing(false);
       });
   };
   const checkStatusFromAPI = async (token) => {
@@ -134,23 +144,41 @@ function App() {
         }, 2000);
         return;
       }
+      if (statusId === 11) {
+        setProcessing(false);
+        toastMessage(response?.data?.status?.description, false);
+        return;
+      }
       setOutPut(response.data);
-      //showSuccessToast(`Compiled Successfully!`);
-      console.log("response.data", response.data);
-      return;
-    } catch (error) {}
+      setProcessing(false);
+      toastMessage("Compiled Successfully!", true);
+    } catch (error) {
+      setProcessing(false);
+      showErrorToast("something went wrong!", false);
+    }
   };
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div className="left-20 right-30 top-5 ml-10 mt-10 grid grid-cols-2 gap-2">
-        <h4 class="text-3xl font-semibold">JavaScript Code Editor</h4>
+        <h4 className="text-3xl font-semibold">JavaScript Code Editor</h4>
         <div className="grid-cols-4">
           <button
             className="bg-black hover:bg-black text-white font-bold py-2 px-4 rounded"
             onClick={() => hanndleExecute()}
           >
-            Compile and Execute
+            {!processing ? "Compile and Execute" : "In Processing..."}
           </button>
         </div>
       </div>
