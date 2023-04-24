@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export function toastMessage({ message, isSuccess = true }) {
+export function toastMessage( message, isSuccess=true) {
   const tOptions = {
     position: "top-right",
     autoClose: 1000,

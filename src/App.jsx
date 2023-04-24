@@ -5,8 +5,6 @@ import axios from "axios";
 import { Buffer } from "buffer";
 import OutPutDetils from "./components/Output";
 import CompiledOutput from "./components/CompiledOutput";
-// import "codemirror/lib/codemirror.css";
-// import "codemirror/theme/darcula.css";
 import { okaidia } from "@uiw/codemirror-theme-okaidia";
 import Footer from "./components/Footer";
 import { toastMessage } from "./components/Toast";
@@ -112,6 +110,9 @@ function App() {
         // get error status
         let status = err.response?.status;
         console.log("status", status);
+        if(status === undefined){
+          toastMessage("Please set API Key in Env File",false)
+        }
         if (status === 429) {
           console.log("too many requests", status);
           toastMessage(
